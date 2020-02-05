@@ -14,7 +14,7 @@ port = 12345
 # inst                                                                                                                                      ead we have inputted an empty string
 # this makes the server listen to requests
 # coming from other computers on the network
-s.bind(('', port))
+s.bind(('192.168.43.138', port))
 print("socket binded to %s" % (port))
 
 # put the socket into listening mode
