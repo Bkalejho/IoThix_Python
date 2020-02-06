@@ -28,12 +28,12 @@ while True:
     c, addr = s.accept()
     print('Got connection from', addr[0])
 
+    print(c.recv(1024).decode("ascii"))
+
     # send a thank you message to the client.
-    c.send(b'Thank you for connecting ')
+    c.send(b'Thank you for connecting and talk to me ')
 
     # Close the connection with the client
     c.close()
-
-    break
 
 print("Se acabó el programa")
