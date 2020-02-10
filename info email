@@ -1,0 +1,19 @@
+EL envio de un correo electrónico se realiza a traves de SMTP (simple Mail transfer Protocol)
+    La comunicación se realiza a traves de TCP sobre el puerto 25 (SMTP) o 587 (Presentación), 465 para el legado SMTP
+    
+    una sesión SMTP consiste de comando originados por un cliente SMTP(el agente de inicio, emisor o receptor) y las respuestas SMTP del servidor. 
+    una transacción SMTP se compone de tres secuencias de comando/respuesta 
+    
+        *MAIL comando para establecer la dirección de retorno conocido como RETURN PATH, Remitente o Sobre.
+        *RCPT comando para establecer un destinatario de este mensaje, pueden ser varios, uno para cada destinatario 
+        *DATA para enviar el mensaje de texto Se compone de una cabecera de mensaje y el cuerpo del mensaje separado por una línea en blanco. DATA es en realidad 
+              un grupo de comandos, y el servidor responde dos veces: una vez para el comando de datos adecuada, para reconocer que está listo para recibir el texto, y
+              la segunda vez después de la secuencia final de los datos, para aceptar o rechazar todo el mensaje.
+
+
+links:
+    https://www.samlogic.net/articles/smtp-commands-reference.htm
+    https://raiolanetworks.es/blog/smtp-que-es-como-funciona-y-como-se-configura/
+    https://stackoverflow.com/questions/33397024/mail-client-in-python-using-sockets-onlyno-smtplib
+    https://gist.github.com/Longlius/3735084
+    https://www.samlogic.net/articles/smtp-commands-reference-auth.htm
