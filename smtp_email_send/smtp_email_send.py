@@ -1,60 +1,114 @@
-# Import socket module
 import socket
 import base64
+import ssl
 import time
 
 
 msg = "\r\n I love computer networks!"
 endmsg = "\r\n.\r\n"
-mailserver = ("smtp.gmail.com", 25)
+mailserver = ("SMTP.Office365.com", 587)
+username = "iothix@outlook.com"
+recipient = "bkalejho@gmail.com"
+password = "ab11235813ba"
+crlfMesg = '\r\n'
 
 # Create a socket object: AF_INET=ipv4, SOC_STREAM=TCP
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 clientSocket.connect(mailserver)
-recv = clientSocket.recv(1024)
+recv = clientSocket.recv(2048)
 recv = recv.decode()
 print("Message after connection request:" + recv)
-if recv[:3] != '220':
-    print('220 reply not received from server.')
+
+heloCommand = 'HELO Alejho\r\n'
+clientSocket.send(heloCommand.encode('utf-8'))
+recv = clientSocket.recv(2048)
+recv = recv.decode()
+print("Message after EHLO command:" + recv)
+
+starttlsCommand = "STARTTLS\r\n"
+clientSocket.send(starttlsCommand.encode())
+recv = clientSocket.recv(1024)
+recv = recv.decode()
+print("Message after STARTTLS command:" + recv)
+
+context = ssl.create_default_context()
+clientSocket = context.wrap_socket(clientSocket, server_hostname="SMTP.Office365.com")
 
 heloCommand = 'EHLO Alejho\r\n'
 clientSocket.send(heloCommand.encode())
-recv1 = clientSocket.recv(1024)
-recv1 = recv1.decode()
-print("Message after EHLO command:" + recv1)
-if recv1[:3] != '250':
-    print('250 reply not received from server.')
+recv = clientSocket.recv(1024)
+recv = recv.decode()
+print("Message after EHLO_TLS command:" + recv)
 
-# starttlsCommand = "STARTTLS\r\n"
-# clientSocket.send(starttlsCommand.encode())
-# recv2 = clientSocket.recv(1024)
-# recv2 = recv2.decode()
-# print("Message after STARTTLS command:" + recv2)
-#
-# heloCommand = 'EHLO Alejho\r\n'
-# clientSocket.send(heloCommand.encode())
-# recv1 = clientSocket.recv(1024)
-# recv1 = recv1.decode()
-# print("Message after EHLO command:" + recv1)
-# # if recv1[:3] != '250':
-# #     print('250 reply not received from server.')
+authCommand = 'AUTH LOGIN\r\n'
+clientSocket.send(authCommand.encode())
+recv = clientSocket.recv(1024)
+recv = recv.decode()
+print("Message after AUTH LOGIN command:" + recv)
 
-# authCommand = 'AUTH LOGIN\r\n'
-# clientSocket.send(authCommand.encode())
-# recv1 = clientSocket.recv(1024)
-# recv1 = recv1.decode()
-# print("Message after AUTH LOGIN command:" + recv1)
+user64 = base64.b64encode(username.encode('utf-8'))
+pass64 = base64.b64encode(password.encode('utf-8'))
 
-#Info for username and password
-username = "bkalejho@gmail.com"
-password = "c(6203)c"
-base64_str = ("\x00"+username+"\x00"+password).encode()
-base64_str = base64.b64encode(base64_str)
-authMsg = "AUTH PLAIN ".encode()+base64_str+"\r\n".encode()
-clientSocket.send(authMsg)
-recv_auth = clientSocket.recv(1024)
-print(recv_auth.decode())
+#print(user64)
 
-# close the connection
+clientSocket.send(user64)
+clientSocket.send(crlfMesg.encode())
+recv = clientSocket.recv(1024)
+recv = recv.decode()
+print("Message after USER:" + recv)
+
+#print(pass64)
+
+clientSocket.send(pass64)
+clientSocket.send(crlfMesg.encode())
+recv = clientSocket.recv(1024)
+recv = recv.decode()
+print("Message after PASS:" + recv)
+
+# Tell server the message's sender
+fromMesg = 'MAIL FROM: <' + username + '>\r\n'
+#print(fromMesg)
+clientSocket.send(fromMesg.encode())
+recv = clientSocket.recv(1024)
+recv = recv.decode()
+print("Message after fromMesg:" + recv)
+
+# Tell server the message's recipient
+rcptMesg = 'RCPT TO: <' + recipient + '>\r\n'
+#print(rcptMesg)
+clientSocket.send(rcptMesg.encode())
+recv = clientSocket.recv(1024)
+recv = recv.decode()
+print("Message after rcptMesg:" + recv)
+
+# Give server the message
+dataMesg = 'DATA\r\n'
+#print(dataMesg)
+clientSocket.send(dataMesg.encode())
+recv = clientSocket.recv(1024)
+recv = recv.decode()
+print("Message after dataMesg:" + recv)
+
+mailbody = """\
+Subject: Que se dice lo mas jony
+
+mensaje sin libreria \r\n"""
+#print(mailbody)
+clientSocket.send(mailbody.encode())
+fullStop = '\r\n.\r\n'
+#print(fullStop)
+clientSocket.send(fullStop.encode())
+recv = clientSocket.recv(1024)
+recv = recv.decode()
+print("Message after mailbody:" + recv)
+
+# Signal the server to quit
+quitMesg = 'QUIT\r\n'
+#print(quitMesg)
+clientSocket.send(quitMesg.encode())
+recv = clientSocket.recv(1024)
+recv = recv.decode()
+print("Message after QUIT:" + recv)
+
 clientSocket.close()
