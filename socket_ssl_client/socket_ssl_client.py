@@ -14,11 +14,11 @@ port = 9004
 # connect to the server on local computer
 s.connect(('192.168.1.2', port))
 #tie the socket to ssl
-s_ssl = context.wrap_socket(s, server_addr = '192.168.1.2')
-s.send(b'Este es el cliente')
+s_ssl = context.wrap_socket(s, server_side = False, server_hostname='www.iothix.com')
+s_ssl.send(b'Este es el cliente')
 
 # receive data from the server
-print(s.recv(1024))
+print(s_ssl.recv(1024))
 # close the connection
 s.close()
 

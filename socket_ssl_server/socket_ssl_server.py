@@ -31,10 +31,11 @@ while True:
     # Establish connection with client.
     c, addr = s.accept()
 
+    # tie the socket to ssl
+    s_ssl = context.wrap_socket(s, server_side = True)
+
     print('Got connection from', addr[0])
 
-    #tie the socket to ssl
-    s_ssl = context.wrap_socket(s, server_side = True)
     mssg = s_ssl.recv(1024)
     print(mssg.decode("ascii"))
 
@@ -43,6 +44,5 @@ while True:
 
     # Close the connection with the client
     c.close()
-
 
 print("Se acabó el programa")
